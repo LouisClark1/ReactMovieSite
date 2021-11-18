@@ -5,24 +5,8 @@ import './index.css';
 
 
 
-class FilmSearchBar extends React.Component{
-    render(){
-        return(
-            <form>
-                <input type = "text" placeholder = "Search films"/>
-            </form>
 
-
-
-
-        )
-
-
-
-    }
-}
-
-class FilmResultHeaders extends React.Component{
+class FilmSearchResult extends React.Component{
     render(){
         const header1 = "Search Resuts";
         return(
@@ -35,20 +19,17 @@ class FilmResultHeaders extends React.Component{
                     </tr>
                 </thead>
             </table>
-       
-
         )
     }
 }
 
-class FilmResults extends React.Component{
+class IndividualFilmResults extends React.Component{
+    // this will need some state
     render(){
         const film = this.props.film;
         const title = film.movieName;
-        const filmLength = film.length 
-    
+        const filmLength = film.length;
         return(
-
             <tr>
                 <td>{title}</td>
                 <td>{filmLength}</td>
@@ -57,13 +38,18 @@ class FilmResults extends React.Component{
     }
 }
 
-class SearchFilms extends React.Component{
+class FilmTable extends React.Component{
     render(){
+        const searchText =this.props.searchText;
+
         const filmRows = [];
 
         this.props.films.forEach((film) => {
+            if (film.movieName.toLowerCase().indexOf(searchText.toLowerCase()) === -1){
+                return;
+            }
             filmRows.push(
-                <FilmResults
+                <IndividualFilmResults
                     film = {film}
                     key = {film.movieId}
                     />
@@ -85,13 +71,65 @@ class SearchFilms extends React.Component{
     }
 }
 
+class FilmSearchBar extends React.Component{
+
+    constructor(props){
+        super(props);
+        this.handleSearchTextChange = this.handleSearchTextChange.bind(this)
+    }
+
+    handleSearchTextChange(e){
+        this.props.onSearchTextChange(e.target.value)
+    }
+
+    render(){
+        const searchText = this.props.searchText;
+        return(
+            <form>
+                <input type = "text" 
+                    placeholder = "Search films"
+                    value = {this.props.searchText}
+                    onChange = {this.handleSearchTextChange}
+                />
+            </form>
+        )
+    }
+}
+class SearchFilms extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            searchText: ""
+        }
+        this.handleSearchTextChange = this.handleSearchTextChange.bind(this);
+    }
+    handleSearchTextChange(searchText){
+        this.setState({
+            searchText: searchText
+        })
+    }
+    render(){
+        return(
+            <div>
+                <FilmSearchBar
+                    searchText = {this.state.searchText}
+                    onSearchTextChange = {this.handleSearchTextChange}
+                />
+                <FilmTable
+                    films = {this.props.films}
+                    searchText = {this.state.searchText}
+                />
+            </div>
+       )
+    }
+}
+
 class FilmsClass extends React.Component{
     render(){
         return(
             <div>
                 <div>
-                    <FilmSearchBar/>
-                    <FilmResultHeaders/>
+                    <FilmSearchResult/>
                     <SearchFilms films = {this.props.films}/>
                 </div>
 
@@ -122,9 +160,6 @@ class ContentAndResults extends React.Component{
     }
 
 }
-
-
-
 const FILMS = [
     {
         movieName: "ACADEMY DINOSAUR",
@@ -168,8 +203,3 @@ ReactDOM.render(
     <ContentAndResults films={FILMS} />,
     document.getElementById('root')
   );
-
-
-
-
-
