@@ -20,7 +20,6 @@ class FilmSearchResult extends React.Component {
 }
 
 class IndividualFilmResults extends React.Component {
-  // this will need some state
   render() {
     const film = this.props.film;
     const title = film.movieName;
@@ -36,19 +35,19 @@ class IndividualFilmResults extends React.Component {
 
 class FilmTable extends React.Component {
   render() {
-    const searchText = this.props.searchText;
-    //const searchText = "";
+    // const searchText = this.props.searchText;
+    // //const searchText = "";
 
-    const filmRows = [];
+    // const filmRows = [];
 
-    this.props.films.forEach((film) => {
-      if (
-        film.movieName.toLowerCase().indexOf(searchText.toLowerCase()) === -1
-      ) {
-        return;
-      }
-      filmRows.push(<IndividualFilmResults film={film} key={film.movieId} />);
-    });
+    // this.props.films.forEach((film) => {
+    //   if (
+    //     film.movieName.toLowerCase().indexOf(searchText.toLowerCase()) === -1
+    //   ) {
+    //     return;
+    //   }
+    //   filmRows.push(<IndividualFilmResults film={film} key={film.movieId} />);
+    // });
     return (
       <table>
         <thead>
@@ -57,7 +56,7 @@ class FilmTable extends React.Component {
             <th>Film Length</th>
           </tr>
         </thead>
-        <tbody>{filmRows}</tbody>
+        <tbody>{this.props.filmRows}</tbody>
       </table>
     );
   }
@@ -67,22 +66,23 @@ class FilmSearchBar extends React.Component {
   constructor(props) {
     super(props);
     this.handleSearchTextChange = this.handleSearchTextChange.bind(this);
-    this.handleSubmitSearch = this.handleSubmitSearch.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleSearchTextChange(e) {
     this.props.onSearchTextChange(e.target.value);
   }
-  handleSubmitSearch(submitEvent) {
-    alert("A search for " + this.props.searchText + " was submitted");
+  handleSubmit(submitEvent) {
+    //alert("A search for " + this.props.searchText + " was submitted");
     submitEvent.preventDefault();
     //this.props.onSearchTextSubmit(event.target.value)
   }
 
   render() {
-    const searchText = this.props.searchText;
+    //const searchText = this.props.searchText;
     return (
-      <form onSubmit={this.handleSubmitSearch}>
+      <form onSubmit={(e) =>{
+          this.props.handleClick(e)}}>
         <label>
           Film Title:
           <input
@@ -103,27 +103,62 @@ class SearchFilms extends React.Component {
     super(props);
     this.state = {
       searchText: "",
+      filmRows: this.renderAllFilms(),
     };
     this.handleSearchTextChange = this.handleSearchTextChange.bind(this);
-  }
+    this.handleClick = this.handleClick.bind(this)
+}
   handleSearchTextChange(searchText) {
     this.setState({
       searchText: searchText,
     });
   }
+
+  renderAllFilms() {
+    const filmRows = [];
+
+    this.props.films.forEach((film) => {
+      filmRows.push(<IndividualFilmResults film={film} key={film.movieId} />);
+    });
+
+    return filmRows;
+  }
+
+  handleClick(event) {
+    alert("A search for " + this.state.searchText + " was submitted");
+    event.preventDefault();
+    const searchText = this.state.searchText;
+
+    const filmRows = [];
+
+    this.props.films.forEach((film) => {
+      if (
+        film.movieName.toLowerCase().indexOf(searchText.toLowerCase()) === -1
+      ) {
+        return;
+      }
+      filmRows.push(<IndividualFilmResults film={film} key={film.movieId} />);
+    });
+
+    this.setState({
+        filmRows: filmRows,
+    })
+
+  }
+
   render() {
     return (
       <div>
         <FilmSearchBar
           searchText={this.state.searchText}
           onSearchTextChange={this.handleSearchTextChange}
-          onSearchTextSubmit = {this.handleSubmitSearch}
+          onSearchTextSubmit={this.handleSubmit}
+          handleClick = {this.handleClick}
         />
         <FilmTable
           films={this.props.films}
           searchText={this.state.searchText}
-          //onSearchTextSubmit = {this.handleSubmitSearch}
-        />
+          filmRows = {this.state.filmRows}/>
       </div>
     );
   }
@@ -139,7 +174,7 @@ class FilmsClass extends React.Component {
         </div>
 
         <div>
-          <AddAFilm onSubmit={this.handleSubmit} />
+          <AddAFilm />
         </div>
 
         <div>
@@ -158,7 +193,7 @@ class AddAFilm extends React.Component {
           <p>This is the section where you can add a film to the DB</p>
         </div>
         <div>
-          <FilmDataEntryBoxes onSubmit={this.handleSubmit} />
+          <FilmDataEntryBoxes />
         </div>
       </div>
     );
@@ -178,24 +213,24 @@ class FilmDataEntryBoxes extends React.Component {
     this.handleChangeID = this.handleChangeID.bind(this);
     this.handleChangeDescription = this.handleChangeDescription.bind(this);
     this.handleChangeLength = this.handleChangeLength.bind(this);
-    this.handleSubmit = this.handleSubmit(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
   handleChangeTitle(event) {
-    this.setState({ value: event.target.value });
+    this.setState({ AddTitle: event.target.value });
   }
   handleChangeID(event) {
-    this.setState({ value: event.target.value });
+    this.setState({ AddID: event.target.value });
   }
   handleChangeDescription(event) {
-    this.setState({ value: event.target.value });
+    this.setState({ AddDescription: event.target.value });
   }
   handleChangeLength(event) {
-    this.setState({ value: event.target.value });
+    this.setState({ AddLength: event.target.value });
   }
 
   handleSubmit(event) {
-    // alert("A name was submitted: "); // + this.state.AddTitle);
-    // event.preventDefault();
+    alert("A name was submitted: " + this.state.AddTitle);
+    event.preventDefault();
   }
   render() {
     return (
@@ -205,29 +240,29 @@ class FilmDataEntryBoxes extends React.Component {
           <input
             type="text"
             placeholder="Title...."
-            AddTitle={this.state.AddTitle}
-            onChangeTitle={this.handleChangeTitle}
+            value={this.state.AddTitle}
+            onChange={this.handleChangeTitle}
           />
           Film language ID:
           <input
             type="text"
             placeholder="ID...."
-            AddID={this.state.AddID}
-            onChangeID={this.handleChangeID}
+            value={this.state.AddID}
+            onChange={this.handleChangeID}
           />
           Film description:
           <input
             type="text"
             placeholder="ohh its a propa good"
-            AddDescription={this.state.AddDescription}
-            onChangeDescription={this.handleChangeDescription}
+            value={this.state.AddDescription}
+            onChange={this.handleChangeDescription}
           />
           Film Length:
           <input
             type="text"
             placeholder="Length...."
-            AddLength={this.state.AddLength}
-            onChangeLength={this.handleChangeLength}
+            value={this.state.AddLength}
+            onChange={this.handleChangeLength}
           />
         </label>
         <input type="submit" value="Submit" />
@@ -311,6 +346,30 @@ const FILMS = [
     movieId: 5,
   },
 ];
+
+class APIImportsClass extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+          FILMS: null,
+        };
+    }
+    componentDidMount() {
+        fetch('http://localhost:8080/movies/all')
+            .then(response => response.json())
+            .then(data => this.setState({ FILMS: data }));
+    }
+    FILMS = this.state.FILMS
+}
+
+// useEffect(() => {
+//   // GET request using fetch inside useEffect React hook
+//   fetch("https://api.npms.io/v2/search?q=react")
+//     .then((response) => response.json())
+//     .then((data) => setTotalReactPackages(data.total));
+
+//   // empty dependency array means this effect will only run once (like componentDidMount in classes)
+// }, []);
 
 ReactDOM.render(
   <ContentAndResults films={FILMS} />,
