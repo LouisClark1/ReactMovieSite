@@ -91,34 +91,31 @@ class SearchFilms extends React.Component {
     this.state = {
       searchText: "",
       filmRows: [],
-      films: []
+      films: [],
     };
     this.handleSearchTextChange = this.handleSearchTextChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
   }
 
-
-  componentDidMount() {
-    fetch("http://localhost:8080/movies/all")
+  async componentDidMount(){
+    await fetch("http://localhost:8080/movies/all")
       .then((response) => response.json())
       .then((jsonData) => {
         const packages = jsonData;
         this.setState({
           films: packages,
-          filmRows: packages
+          filmRows: packages,
           //totalPackages: jsonData.total,
         });
-      });
+      })
+      //.then((data) => console.log(data[0]));
   }
-
-
 
   handleSearchTextChange(searchText) {
     this.setState({
       searchText: searchText,
     });
   }
-
 
   handleClick(event) {
     alert("A search for " + this.state.searchText + " was submitted");
@@ -145,7 +142,7 @@ class SearchFilms extends React.Component {
     const renderRows = [];
     this.state.filmRows.forEach((film) => {
       renderRows.push(<IndividualFilmResults film={film} key={film.movieId} />);
-  })
+    });
     return (
       <div>
         <FilmSearchBar
@@ -156,7 +153,7 @@ class SearchFilms extends React.Component {
         />
         <FilmTable
           //filmRows={this.state.filmRows}
-          filmRows = {renderRows}
+          filmRows={renderRows}
         />
       </div>
     );
@@ -168,14 +165,12 @@ class FilmsClass extends React.Component {
     return (
       <div>
         <div>
+          <AddAFilm />
+        </div>
+        <div>
           <FilmSearchResult />
           <SearchFilms films={this.props.films} />
         </div>
-
-        <div>
-          <AddAFilm />
-        </div>
-
         <div>
           <RemoveAFilm />
         </div>
@@ -227,25 +222,30 @@ class FilmDataEntryBoxes extends React.Component {
     this.setState({ AddLength: event.target.value });
   }
 
-
-  addFilmMethod() {
-    // Simple POST request with a JSON body using fetch
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: 'React POST Request Example' })
-    };
-    fetch("localhost:8080/addMovie?movieName=vlad the impailer part 2&languageId=5&description=big release&length=5")
-        //.then(response => response.json())
-        //.then(data => this.setState({ postId: data.id }));
-}
-
-
   handleSubmit(event) {
     alert("A name was submitted: " + this.state.AddTitle);
     event.preventDefault();
-    
+    const movieName = this.state.AddTitle;
+    const languageId = 5;
+    const description = "big release";
+    const length = 5;
 
+    const addFilmData = { 
+      movieName: movieName,
+      languageId: languageId,
+      description: description,
+      length: length
+      };
+    fetch(
+      "http://localhost:8080/addMovie",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(addFilmData),
+      }
+    ).then(() => {
+      console.log("film added");
+    });
   }
   render() {
     return (
@@ -314,7 +314,7 @@ class ContentAndResults extends React.Component {
     //const APIImportsClass = this.props.APIImportsClass;
     return (
       <div>
-        <FilmsClass/>
+        <FilmsClass />
         {/* <APIImportsClass/> */}
       </div>
     );
@@ -365,81 +365,61 @@ class ContentAndResults extends React.Component {
 // ];
 
 
-class GetFilms extends React.Component {
-  render() {
-  const APIImportsClass = this.props.APIImportsClass;
 
-  return (
-  <tr>
-  <td>{APIImportsClass.title}</td>
-  <td>{APIImportsClass.film_id}</td>
-  <td>{APIImportsClass.length}</td>
-  <td>{APIImportsClass.description}</td>
-  <td>{APIImportsClass.language_id}</td>
-  </tr>
-  );
-  }
-  }
+// class APIImportsClass extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       top10Packages: [],
+//       totalPackages: null,
+//     };
+//   }
+//   componentDidMount() {
+//     fetch("http://18.218.218.127:8080/movies/all")
+//       .then((response) => response.json())
+//       .then((jsonData) => {
+//         const packages = jsonData;
+//         this.setState({
+//           top10Packages: packages,
+//           totalPackages: jsonData.total,
+//         });
+//       });
+//   }
 
+//   render() {
+//     const rows = [];
+//     this.state.top10Packages.forEach((APIImportsClass) => {
+//       rows.push(<GetFilms APIImportsClass={APIImportsClass} />);
+//     });
 
+//     return (
+//       <div>
+//         <h1>TOP 20 FILM RESULTS</h1>
+//         <thead style={({ color: "blue" }, { textAlign: "" })}>
+//           <tr>
+//             <td>
+//               <b>Title</b>
+//             </td>
+//             <td>
+//               <b>Film ID</b>
+//             </td>
+//             <td>
+//               <b>Length</b>
+//             </td>
+//             <td>
+//               <b>Description</b>
+//             </td>
+//             <td>
+//               <b>Language ID</b>
+//             </td>
+//           </tr>
+//         </thead>
+//         <tbody>{rows}</tbody>
 
-class APIImportsClass extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      top10Packages: [],
-      totalPackages: null,
-    };
-  }
-  componentDidMount() {
-    fetch("http://localhost:8080/movies/all")
-      .then((response) => response.json())
-      .then((jsonData) => {
-        const packages = jsonData;
-        this.setState({
-          top10Packages: packages,
-          totalPackages: jsonData.total,
-        });
-      });
-  }
+//         <h4>{this.state.totalPackages}</h4>
+//       </div>
+//     );
+//   }
+// }
 
-  render() {
-    const rows = [];
-    this.state.top10Packages.forEach((APIImportsClass) => {
-      rows.push(<GetFilms APIImportsClass={APIImportsClass} />);
-    });
-
-    return (
-      <div>
-        <h1>TOP 20 FILM RESULTS</h1>
-        <thead style={({ color: "blue" }, { textAlign: "" })}>
-          <tr>
-            <td>
-              <b>Title</b>
-            </td>
-            <td>
-              <b>Film ID</b>
-            </td>
-            <td>
-              <b>Length</b>
-            </td>
-            <td>
-              <b>Description</b>
-            </td>
-            <td>
-              <b>Language ID</b>
-            </td>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-
-        <h4>{this.state.totalPackages}</h4>
-      </div>
-    );
-  }
-}
-
-ReactDOM.render(
-  <ContentAndResults/>,
-  document.getElementById("root")
-);
+ReactDOM.render(<ContentAndResults />, document.getElementById("root"));
