@@ -35,19 +35,6 @@ class IndividualFilmResults extends React.Component {
 
 class FilmTable extends React.Component {
   render() {
-    // const searchText = this.props.searchText;
-    // //const searchText = "";
-
-    // const filmRows = [];
-
-    // this.props.films.forEach((film) => {
-    //   if (
-    //     film.movieName.toLowerCase().indexOf(searchText.toLowerCase()) === -1
-    //   ) {
-    //     return;
-    //   }
-    //   filmRows.push(<IndividualFilmResults film={film} key={film.movieId} />);
-    // });
     return (
       <table>
         <thead>
@@ -73,16 +60,16 @@ class FilmSearchBar extends React.Component {
     this.props.onSearchTextChange(e.target.value);
   }
   handleSubmit(submitEvent) {
-    //alert("A search for " + this.props.searchText + " was submitted");
     submitEvent.preventDefault();
-    //this.props.onSearchTextSubmit(event.target.value)
   }
 
   render() {
-    //const searchText = this.props.searchText;
     return (
-      <form onSubmit={(e) =>{
-          this.props.handleClick(e)}}>
+      <form
+        onSubmit={(e) => {
+          this.props.handleClick(e);
+        }}
+      >
         <label>
           Film Title:
           <input
@@ -106,8 +93,14 @@ class SearchFilms extends React.Component {
       filmRows: this.renderAllFilms(),
     };
     this.handleSearchTextChange = this.handleSearchTextChange.bind(this);
-    this.handleClick = this.handleClick.bind(this)
-}
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+
+
+
+
+  
   handleSearchTextChange(searchText) {
     this.setState({
       searchText: searchText,
@@ -141,9 +134,8 @@ class SearchFilms extends React.Component {
     });
 
     this.setState({
-        filmRows: filmRows,
-    })
-
+      filmRows: filmRows,
+    });
   }
 
   render() {
@@ -153,12 +145,13 @@ class SearchFilms extends React.Component {
           searchText={this.state.searchText}
           onSearchTextChange={this.handleSearchTextChange}
           onSearchTextSubmit={this.handleSubmit}
-          handleClick = {this.handleClick}
+          handleClick={this.handleClick}
         />
         <FilmTable
-          films={this.props.films}
-          searchText={this.state.searchText}
-          filmRows = {this.state.filmRows}/>
+          //films={this.props.films}
+          //searchText={this.state.searchText}
+          filmRows={this.state.filmRows}
+        />
       </div>
     );
   }
@@ -296,9 +289,11 @@ class SelectFilmToRemove extends React.Component {
 
 class ContentAndResults extends React.Component {
   render() {
+    //const APIImportsClass = this.props.APIImportsClass;
     return (
       <div>
-        <FilmsClass films={this.props.films} />
+        <FilmsClass  films={FILMS}  />
+        <APIImportsClass/>
       </div>
     );
   }
@@ -347,31 +342,82 @@ const FILMS = [
   },
 ];
 
+
+class GetFilms extends React.Component {
+  render() {
+  const APIImportsClass = this.props.APIImportsClass;
+
+  return (
+  <tr>
+  <td>{APIImportsClass.title}</td>
+  <td>{APIImportsClass.film_id}</td>
+  <td>{APIImportsClass.length}</td>
+  <td>{APIImportsClass.description}</td>
+  <td>{APIImportsClass.language_id}</td>
+  </tr>
+  );
+  }
+  }
+
+
+
 class APIImportsClass extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-          FILMS: null,
-        };
-    }
-    componentDidMount() {
-        fetch('http://localhost:8080/movies/all')
-            .then(response => response.json())
-            .then(data => this.setState({ FILMS: data }));
-    }
-    FILMS = this.state.FILMS
+  constructor(props) {
+    super(props);
+    this.state = {
+      top10Packages: [],
+      totalPackages: null,
+    };
+  }
+  componentDidMount() {
+    fetch("http://localhost:8080/movies/all")
+      .then((response) => response.json())
+      .then((jsonData) => {
+        const packages = jsonData;
+        this.setState({
+          top10Packages: packages,
+          totalPackages: jsonData.total,
+        });
+      });
+  }
+
+  render() {
+    const rows = [];
+    this.state.top10Packages.forEach((APIImportsClass) => {
+      rows.push(<GetFilms APIImportsClass={APIImportsClass} />);
+    });
+
+    return (
+      <div>
+        <h1>TOP 20 FILM RESULTS</h1>
+        <thead style={({ color: "blue" }, { textAlign: "" })}>
+          <tr>
+            <td>
+              <b>Title</b>
+            </td>
+            <td>
+              <b>Film ID</b>
+            </td>
+            <td>
+              <b>Length</b>
+            </td>
+            <td>
+              <b>Description</b>
+            </td>
+            <td>
+              <b>Language ID</b>
+            </td>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+
+        <h4>{this.state.totalPackages}</h4>
+      </div>
+    );
+  }
 }
 
-// useEffect(() => {
-//   // GET request using fetch inside useEffect React hook
-//   fetch("https://api.npms.io/v2/search?q=react")
-//     .then((response) => response.json())
-//     .then((data) => setTotalReactPackages(data.total));
-
-//   // empty dependency array means this effect will only run once (like componentDidMount in classes)
-// }, []);
-
 ReactDOM.render(
-  <ContentAndResults films={FILMS} />,
+  <ContentAndResults/>,
   document.getElementById("root")
 );
