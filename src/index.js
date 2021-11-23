@@ -90,32 +90,35 @@ class SearchFilms extends React.Component {
     super(props);
     this.state = {
       searchText: "",
-      filmRows: this.renderAllFilms(),
+      filmRows: [],
+      films: []
     };
     this.handleSearchTextChange = this.handleSearchTextChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
   }
 
 
+  componentDidMount() {
+    fetch("http://localhost:8080/movies/all")
+      .then((response) => response.json())
+      .then((jsonData) => {
+        const packages = jsonData;
+        this.setState({
+          films: packages,
+          filmRows: packages
+          //totalPackages: jsonData.total,
+        });
+      });
+  }
 
 
 
-  
   handleSearchTextChange(searchText) {
     this.setState({
       searchText: searchText,
     });
   }
 
-  renderAllFilms() {
-    const filmRows = [];
-
-    this.props.films.forEach((film) => {
-      filmRows.push(<IndividualFilmResults film={film} key={film.movieId} />);
-    });
-
-    return filmRows;
-  }
 
   handleClick(event) {
     alert("A search for " + this.state.searchText + " was submitted");
@@ -124,13 +127,13 @@ class SearchFilms extends React.Component {
 
     const filmRows = [];
 
-    this.props.films.forEach((film) => {
+    this.state.films.forEach((film) => {
       if (
         film.movieName.toLowerCase().indexOf(searchText.toLowerCase()) === -1
       ) {
         return;
       }
-      filmRows.push(<IndividualFilmResults film={film} key={film.movieId} />);
+      filmRows.push(film);
     });
 
     this.setState({
@@ -139,6 +142,10 @@ class SearchFilms extends React.Component {
   }
 
   render() {
+    const renderRows = [];
+    this.state.filmRows.forEach((film) => {
+      renderRows.push(<IndividualFilmResults film={film} key={film.movieId} />);
+  })
     return (
       <div>
         <FilmSearchBar
@@ -148,9 +155,8 @@ class SearchFilms extends React.Component {
           handleClick={this.handleClick}
         />
         <FilmTable
-          //films={this.props.films}
-          //searchText={this.state.searchText}
-          filmRows={this.state.filmRows}
+          //filmRows={this.state.filmRows}
+          filmRows = {renderRows}
         />
       </div>
     );
@@ -221,9 +227,25 @@ class FilmDataEntryBoxes extends React.Component {
     this.setState({ AddLength: event.target.value });
   }
 
+
+  addFilmMethod() {
+    // Simple POST request with a JSON body using fetch
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: 'React POST Request Example' })
+    };
+    fetch("localhost:8080/addMovie?movieName=vlad the impailer part 2&languageId=5&description=big release&length=5")
+        //.then(response => response.json())
+        //.then(data => this.setState({ postId: data.id }));
+}
+
+
   handleSubmit(event) {
     alert("A name was submitted: " + this.state.AddTitle);
     event.preventDefault();
+    
+
   }
   render() {
     return (
@@ -292,55 +314,55 @@ class ContentAndResults extends React.Component {
     //const APIImportsClass = this.props.APIImportsClass;
     return (
       <div>
-        <FilmsClass  films={FILMS}  />
-        <APIImportsClass/>
+        <FilmsClass/>
+        {/* <APIImportsClass/> */}
       </div>
     );
   }
 }
 
-const FILMS = [
-  {
-    movieName: "ACADEMY DINOSAUR",
-    languageId: 1,
-    description:
-      "A Epic Drama of a Feminist And a Mad Scientist who must Battle a Teacher in The Canadian Rockies",
-    length: 86,
-    movieId: 1,
-  },
-  {
-    movieName: "ACE GOLDFINGER",
-    languageId: 1,
-    description:
-      "A Astounding Epistle of a Database Administrator And a Explorer who must Find a Car in Ancient China",
-    length: 48,
-    movieId: 2,
-  },
-  {
-    movieName: "ADAPTATION HOLES",
-    languageId: 1,
-    description:
-      "A Astounding Reflection of a Lumberjack And a Car who must Sink a Lumberjack in A Baloon Factory",
-    length: 50,
-    movieId: 3,
-  },
-  {
-    movieName: "AFFAIR PREJUDICE",
-    languageId: 1,
-    description:
-      "A Fanciful Documentary of a Frisbee And a Lumberjack who must Chase a Monkey in A Shark Tank",
-    length: 117,
-    movieId: 4,
-  },
-  {
-    movieName: "AFRICAN EGG",
-    languageId: 1,
-    description:
-      "A Fast-Paced Documentary of a Pastry Chef And a Dentist who must Pursue a Forensic Psychologist in The Gulf of Mexico",
-    length: 130,
-    movieId: 5,
-  },
-];
+// const FILMS = [
+//   {
+//     movieName: "ACADEMY DINOSAUR",
+//     languageId: 1,
+//     description:
+//       "A Epic Drama of a Feminist And a Mad Scientist who must Battle a Teacher in The Canadian Rockies",
+//     length: 86,
+//     movieId: 1,
+//   },
+//   {
+//     movieName: "ACE GOLDFINGER",
+//     languageId: 1,
+//     description:
+//       "A Astounding Epistle of a Database Administrator And a Explorer who must Find a Car in Ancient China",
+//     length: 48,
+//     movieId: 2,
+//   },
+//   {
+//     movieName: "ADAPTATION HOLES",
+//     languageId: 1,
+//     description:
+//       "A Astounding Reflection of a Lumberjack And a Car who must Sink a Lumberjack in A Baloon Factory",
+//     length: 50,
+//     movieId: 3,
+//   },
+//   {
+//     movieName: "AFFAIR PREJUDICE",
+//     languageId: 1,
+//     description:
+//       "A Fanciful Documentary of a Frisbee And a Lumberjack who must Chase a Monkey in A Shark Tank",
+//     length: 117,
+//     movieId: 4,
+//   },
+//   {
+//     movieName: "AFRICAN EGG",
+//     languageId: 1,
+//     description:
+//       "A Fast-Paced Documentary of a Pastry Chef And a Dentist who must Pursue a Forensic Psychologist in The Gulf of Mexico",
+//     length: 130,
+//     movieId: 5,
+//   },
+// ];
 
 
 class GetFilms extends React.Component {
