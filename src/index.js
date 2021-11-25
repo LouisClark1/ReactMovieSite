@@ -324,6 +324,7 @@ class SelectFilmToRemove extends React.Component {
     alert("Film number " + this.state.RemoveSelect + "was deleted");
   }
 
+  
   render() {
     return (
       <form onSubmit={this.handleSubmitRemove}>
