@@ -122,7 +122,7 @@ class SearchFilms extends React.Component {
   }
 
   handleClick(event) {
-    alert("A search for " + this.state.searchText + " was submitted");
+    //alert("A search for " + this.state.searchText + " was submitted");
     event.preventDefault();
     const searchText = this.state.searchText;
 
@@ -157,7 +157,7 @@ class SearchFilms extends React.Component {
             handleClick={this.handleClick}
           />
         </div>
-        <div class="filmResultsDiv">
+        <div className="filmResultsDiv">
           <FilmTable
             //filmRows={this.state.filmRows}
             filmRows={renderRows}
@@ -172,7 +172,7 @@ class FilmsClass extends React.Component {
   render() {
     return (
       <div>
-        <div class="pageTitle">
+        <div className="pageTitle">
           <h1>
             <center>All the films you should care about</center>
           </h1>
@@ -314,17 +314,22 @@ class SelectFilmToRemove extends React.Component {
     };
 
     this.handleChangeRemoveSelect = this.handleChangeRemoveSelect.bind(this);
+    this.handleSubmitRemove = this.handleSubmitRemove.bind(this);
   }
 
   handleChangeRemoveSelect(e) {
     this.setState({ RemoveSelect: e.target.value });
   }
 
-  handleSubmit(event) {
-    alert("Film number " + this.state.RemoveSelect + "was deleted");
+  handleSubmitRemove(event) {
+    alert("Film number " + this.state.RemoveSelect + " was deleted");
+    fetch("http://52.15.164.212:8080/removeMovie/" + this.state.RemoveSelect, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then((res) => console.log(res));
   }
 
-  
   render() {
     return (
       <form onSubmit={this.handleSubmitRemove}>
