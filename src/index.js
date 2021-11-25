@@ -28,6 +28,8 @@ class IndividualFilmResults extends React.Component {
       <tr>
         <td>{title}</td>
         <td>{filmLength}</td>
+        <td>{film.description}</td>
+        <td>{film.movieId}</td>
       </tr>
     );
   }
@@ -40,7 +42,9 @@ class FilmTable extends React.Component {
         <thead>
           <tr>
             <th>Title</th>
-            <th>Film Length</th>
+            <th>Length</th>
+            <th>Description</th>
+            <th>Film ID</th>
           </tr>
         </thead>
         <tbody>{this.props.filmRows}</tbody>
@@ -97,8 +101,8 @@ class SearchFilms extends React.Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  async componentDidMount(){
-    await fetch("http://localhost:8080/movies/all")
+  async componentDidMount() {
+    await fetch("http://52.15.164.212:8080/movies/all")
       .then((response) => response.json())
       .then((jsonData) => {
         const packages = jsonData;
@@ -107,8 +111,8 @@ class SearchFilms extends React.Component {
           filmRows: packages,
           //totalPackages: jsonData.total,
         });
-      })
-      //.then((data) => console.log(data[0]));
+      });
+    //.then((data) => console.log(data[0]));
   }
 
   handleSearchTextChange(searchText) {
@@ -145,16 +149,20 @@ class SearchFilms extends React.Component {
     });
     return (
       <div>
-        <FilmSearchBar
-          searchText={this.state.searchText}
-          onSearchTextChange={this.handleSearchTextChange}
-          onSearchTextSubmit={this.handleSubmit}
-          handleClick={this.handleClick}
-        />
-        <FilmTable
-          //filmRows={this.state.filmRows}
-          filmRows={renderRows}
-        />
+        <div>
+          <FilmSearchBar
+            searchText={this.state.searchText}
+            onSearchTextChange={this.handleSearchTextChange}
+            onSearchTextSubmit={this.handleSubmit}
+            handleClick={this.handleClick}
+          />
+        </div>
+        <div class="filmResultsDiv">
+          <FilmTable
+            //filmRows={this.state.filmRows}
+            filmRows={renderRows}
+          />
+        </div>
       </div>
     );
   }
@@ -164,6 +172,11 @@ class FilmsClass extends React.Component {
   render() {
     return (
       <div>
+        <div class="pageTitle">
+          <h1>
+            <center>All the films you should care about</center>
+          </h1>
+        </div>
         <div>
           <AddAFilm />
         </div>
@@ -224,26 +237,23 @@ class FilmDataEntryBoxes extends React.Component {
 
   handleSubmit(event) {
     alert("A name was submitted: " + this.state.AddTitle);
-    event.preventDefault();
+    //event.preventDefault();
     const movieName = this.state.AddTitle;
-    const languageId = 5;
-    const description = "big release";
-    const length = 5;
+    const languageId = this.state.AddID;
+    const description = this.state.AddDescription;
+    const length = this.state.AddLength;
 
-    const addFilmData = { 
+    const addFilmData = {
       movieName: movieName,
       languageId: languageId,
       description: description,
-      length: length
-      };
-    fetch(
-      "http://localhost:8080/addMovie",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(addFilmData),
-      }
-    ).then(() => {
+      length: length,
+    };
+    fetch("http://52.15.164.212:8080/addMovie", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(addFilmData),
+    }).then(() => {
       console.log("film added");
     });
   }
@@ -297,10 +307,33 @@ class RemoveAFilm extends React.Component {
 }
 
 class SelectFilmToRemove extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      RemoveSelect: "",
+    };
+
+    this.handleChangeRemoveSelect = this.handleChangeRemoveSelect.bind(this);
+  }
+
+  handleChangeRemoveSelect(e) {
+    this.setState({ RemoveSelect: e.target.value });
+  }
+
+  handleSubmit(event) {
+    alert("Film number " + this.state.RemoveSelect + "was deleted");
+  }
+
   render() {
     return (
       <form onSubmit={this.handleSubmitRemove}>
         <label>
+          <input
+            type="text"
+            placeholder="Film ID..."
+            value={this.state.RemoveSelect}
+            onChange={this.handleChangeRemoveSelect}
+          />
           Film to remove:
           <input type="submit" value="Submit" />
         </label>
@@ -311,7 +344,6 @@ class SelectFilmToRemove extends React.Component {
 
 class ContentAndResults extends React.Component {
   render() {
-    //const APIImportsClass = this.props.APIImportsClass;
     return (
       <div>
         <FilmsClass />
@@ -320,106 +352,5 @@ class ContentAndResults extends React.Component {
     );
   }
 }
-
-// const FILMS = [
-//   {
-//     movieName: "ACADEMY DINOSAUR",
-//     languageId: 1,
-//     description:
-//       "A Epic Drama of a Feminist And a Mad Scientist who must Battle a Teacher in The Canadian Rockies",
-//     length: 86,
-//     movieId: 1,
-//   },
-//   {
-//     movieName: "ACE GOLDFINGER",
-//     languageId: 1,
-//     description:
-//       "A Astounding Epistle of a Database Administrator And a Explorer who must Find a Car in Ancient China",
-//     length: 48,
-//     movieId: 2,
-//   },
-//   {
-//     movieName: "ADAPTATION HOLES",
-//     languageId: 1,
-//     description:
-//       "A Astounding Reflection of a Lumberjack And a Car who must Sink a Lumberjack in A Baloon Factory",
-//     length: 50,
-//     movieId: 3,
-//   },
-//   {
-//     movieName: "AFFAIR PREJUDICE",
-//     languageId: 1,
-//     description:
-//       "A Fanciful Documentary of a Frisbee And a Lumberjack who must Chase a Monkey in A Shark Tank",
-//     length: 117,
-//     movieId: 4,
-//   },
-//   {
-//     movieName: "AFRICAN EGG",
-//     languageId: 1,
-//     description:
-//       "A Fast-Paced Documentary of a Pastry Chef And a Dentist who must Pursue a Forensic Psychologist in The Gulf of Mexico",
-//     length: 130,
-//     movieId: 5,
-//   },
-// ];
-
-
-
-// class APIImportsClass extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       top10Packages: [],
-//       totalPackages: null,
-//     };
-//   }
-//   componentDidMount() {
-//     fetch("http://18.218.218.127:8080/movies/all")
-//       .then((response) => response.json())
-//       .then((jsonData) => {
-//         const packages = jsonData;
-//         this.setState({
-//           top10Packages: packages,
-//           totalPackages: jsonData.total,
-//         });
-//       });
-//   }
-
-//   render() {
-//     const rows = [];
-//     this.state.top10Packages.forEach((APIImportsClass) => {
-//       rows.push(<GetFilms APIImportsClass={APIImportsClass} />);
-//     });
-
-//     return (
-//       <div>
-//         <h1>TOP 20 FILM RESULTS</h1>
-//         <thead style={({ color: "blue" }, { textAlign: "" })}>
-//           <tr>
-//             <td>
-//               <b>Title</b>
-//             </td>
-//             <td>
-//               <b>Film ID</b>
-//             </td>
-//             <td>
-//               <b>Length</b>
-//             </td>
-//             <td>
-//               <b>Description</b>
-//             </td>
-//             <td>
-//               <b>Language ID</b>
-//             </td>
-//           </tr>
-//         </thead>
-//         <tbody>{rows}</tbody>
-
-//         <h4>{this.state.totalPackages}</h4>
-//       </div>
-//     );
-//   }
-// }
 
 ReactDOM.render(<ContentAndResults />, document.getElementById("root"));
