@@ -9,7 +9,7 @@ class FilmSearchResult extends React.Component {
       <table>
         <thead>
           <tr>
-            <th colSpan="1">
+            <th colSpan="1" className="titlesDiv">
               <h2>{header1}</h2>
             </th>
           </tr>
@@ -81,10 +81,11 @@ class FilmSearchBar extends React.Component {
             placeholder="Search films"
             value={this.props.searchText}
             onChange={this.handleSearchTextChange}
+            id="searchTextInput"
           />
         </label>
 
-        <input type="submit" value="Submit" />
+        <input type="submit" value="Submit" id="searchButtonInput" />
       </form>
     );
   }
@@ -172,20 +173,32 @@ class FilmsClass extends React.Component {
   render() {
     return (
       <div>
-        <div className="pageTitle">
-          <h1>
+        <div >
+          <img
+            src="https://th.bing.com/th/id/R.31cf3ec27ea1088d285cba5ace6bd904?rik=m9%2bsw1ORUqipTw&riu=http%3a%2f%2fimg.izismile.com%2fimg%2fimg7%2f20140630%2f1000%2f80s_movie_gifs_remind_us_why_these_films_were_so_great_05.gif&ehk=Hu0WEQNc893sPXMgnXl4IQ9rq2a%2fPPZTFj22sgLu6Yg%3d&risl=&pid=ImgRaw&r=0"
+            width="30%"
+            id="movingMan"
+          />
+          <h1 className="pageTitleTextDiv">
             <center>All the films you should care about</center>
           </h1>
-        </div>
-        <div>
-          <AddAFilm />
-        </div>
+          <img
+            src="https://64.media.tumblr.com/827011a5273d44b865ba7eb29a2a1fb3/tumblr_p2m538tqyB1rjlj53o1_500.gif"
+            width="30%"
+            id="ball"
+          />
+           </div>
+        <center>
+          <div className="dataEntryDiv">
+            <AddAFilm />
+          </div>
+          <div className="dataEntryDiv">
+            <RemoveAFilm />
+          </div>
+        </center>
         <div>
           <FilmSearchResult />
           <SearchFilms films={this.props.films} />
-        </div>
-        <div>
-          <RemoveAFilm />
         </div>
       </div>
     );
@@ -197,9 +210,12 @@ class AddAFilm extends React.Component {
     return (
       <div>
         <div>
-          <p>This is the section where you can add a film to the DB</p>
-        </div>
-        <div>
+          <p className="titlesDiv">
+            <h2>
+              {" "}
+              <center>Add Films</center>
+            </h2>
+          </p>
           <FilmDataEntryBoxes />
         </div>
       </div>
@@ -259,39 +275,55 @@ class FilmDataEntryBoxes extends React.Component {
   }
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <label>
-          Film Title:
-          <input
-            type="text"
-            placeholder="Title...."
-            value={this.state.AddTitle}
-            onChange={this.handleChangeTitle}
-          />
-          Film language ID:
-          <input
-            type="text"
-            placeholder="ID...."
-            value={this.state.AddID}
-            onChange={this.handleChangeID}
-          />
-          Film description:
-          <input
-            type="text"
-            placeholder="ohh its a propa good"
-            value={this.state.AddDescription}
-            onChange={this.handleChangeDescription}
-          />
-          Film Length:
-          <input
-            type="text"
-            placeholder="Length...."
-            value={this.state.AddLength}
-            onChange={this.handleChangeLength}
-          />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
+      <div>
+        <form onSubmit={this.handleSubmit}>
+          <label>
+            <div>
+              Film Title:
+              <input
+                type="text"
+                placeholder="Title...."
+                value={this.state.AddTitle}
+                onChange={this.handleChangeTitle}
+                id="addFilmTitleTextInput"
+              />
+            </div>
+            <div>
+              Film language ID:
+              <input
+                type="text"
+                placeholder="ID...."
+                value={this.state.AddID}
+                onChange={this.handleChangeID}
+                id="addFilmLangIDTextInput"
+              />
+            </div>
+            <div>
+              Film description:
+              <input
+                type="text"
+                placeholder="ohh its a propa good"
+                value={this.state.AddDescription}
+                onChange={this.handleChangeDescription}
+                id="addFilmDescriptionTextInput"
+              />
+            </div>
+            <div>
+              Film Length:
+              <input
+                type="text"
+                placeholder="Length...."
+                value={this.state.AddLength}
+                onChange={this.handleChangeLength}
+                id="addFilmLengthTextInput"
+              />
+            </div>
+          </label>
+          <center>
+            <input type="submit" value="Submit" id="addButtonInput" />
+          </center>
+        </form>
+      </div>
     );
   }
 }
@@ -300,6 +332,11 @@ class RemoveAFilm extends React.Component {
   render() {
     return (
       <div>
+        <p className="titlesDiv">
+          <h2>
+            <center>Remove Films</center>
+          </h2>
+        </p>
         <SelectFilmToRemove />
       </div>
     );
@@ -334,14 +371,17 @@ class SelectFilmToRemove extends React.Component {
     return (
       <form onSubmit={this.handleSubmitRemove}>
         <label>
+          Film to remove:
           <input
             type="text"
             placeholder="Film ID..."
             value={this.state.RemoveSelect}
             onChange={this.handleChangeRemoveSelect}
+            id="removeFilmTextInput"
           />
-          Film to remove:
-          <input type="submit" value="Submit" />
+          <center>
+            <input type="submit" value="Submit" id="removeButtonInput" />
+          </center>
         </label>
       </form>
     );

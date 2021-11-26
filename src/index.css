@@ -1,19 +1,39 @@
 body {
   font: 14px "Century Gothic", Futura, sans-serif;
   margin: 20px;
+  padding: 0 10px;
 }
 
-.pageTitle {
+.pageTitleTextDiv {
+  float: left;
   margin-left: auto;
   margin-right: auto;
-  width: 30em;
+  width: 30%;
 }
 
 .filmResultsDiv {
-  float: left;
-  height: 470px;
-  width: 80%;
+  height: 300px;
+  width: 90%;
   padding: 0 4px;
   overflow-wrap: break-word;
   overflow: auto;
+
+  margin-left: auto;
+  margin-right: auto;
+}
+#ball {
+  height: 20%;
+}
+#movingMan {
+  float: left;
+  height: 20%;
+}
+
+.dataEntryDiv {
+  display: inline-block;
+  width: 40%;
+  margin-left: auto;
+  margin-right: auto;
+  margin: 0 10px;
+  background: #ce8888;
 }
